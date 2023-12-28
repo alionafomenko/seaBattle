@@ -8,6 +8,8 @@ module.exports.autorisation = autorisation;
 module.exports.startGame = startGame;
 module.exports.getStatus = getStatus;
 module.exports.sendCheckSum = sendCheckSum;
+module.exports.sendHit = sendHit;
+module.exports.sendAnswer = sendAnswer;
 
 async function connect(){
     try {
@@ -85,6 +87,7 @@ async function getStatus(sessionId) {
         let result = await connection.execute(`begin
   getstatus(p_sessionid => :p_sessionid,
             p_status => :p_status,
+            p_recent_hit => :p_recent_hit,
             p_error => :p_error);
 end;`, [sessionId, {
                 type: oracledb.DB_TYPE_VARCHAR,
@@ -92,9 +95,12 @@ end;`, [sessionId, {
             }, {
                 type: oracledb.DB_TYPE_VARCHAR,
                 dir: oracledb.BIND_OUT
+            }, {
+                type: oracledb.DB_TYPE_VARCHAR,
+                dir: oracledb.BIND_OUT
             }],
             {outFormat: oracledb.OUT_FORMAT_OBJECT});
-        return {status: result.outBinds[0], error: result.outBinds[1]};
+        return {status: result.outBinds[0], recent_hit: result.outBinds[1], error: result.outBinds[2]};
     } catch (e) {
         console.error(e);
     }
@@ -113,7 +119,46 @@ end;`, [sessionId, checkSum, {
                 dir: oracledb.BIND_OUT
             }],
             {outFormat: oracledb.OUT_FORMAT_OBJECT});
-        return {status: result.outBinds[0], error: result.outBinds[1]};
+        return result.outBinds[0];
+    } catch (e) {
+        console.error(e);
+    }
+
+}
+
+async function sendHit(sessionId, hit) {
+    try {
+        let result = await connection.execute(`begin
+  sendhit(p_sessionid => :p_sessionid,
+          p_hit => :p_hit,
+          p_error => :p_error);
+end;
+`, [sessionId, hit, {
+                type: oracledb.DB_TYPE_VARCHAR,
+                dir: oracledb.BIND_OUT
+            }],
+            {outFormat: oracledb.OUT_FORMAT_OBJECT});
+        return result.outBinds[0];
+    } catch (e) {
+        console.error(e);
+    }
+
+}
+
+
+async function sendAnswer(sessionId, hitResult) {
+    try {
+        let result = await connection.execute(`begin
+  sendanswer(p_sessionid => :p_sessionid,
+             p_hit_result => :p_hit_result,
+             p_error => :p_error);
+end;
+`, [sessionId, hitResult, {
+                type: oracledb.DB_TYPE_VARCHAR,
+                dir: oracledb.BIND_OUT
+            }],
+            {outFormat: oracledb.OUT_FORMAT_OBJECT});
+        return result.outBinds[0];
     } catch (e) {
         console.error(e);
     }

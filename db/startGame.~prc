@@ -1,4 +1,4 @@
-create or replace procedure startGame(p_sessionId in number,
+﻿create or replace procedure startGame(p_sessionId in number,
                                       p_error     out varchar2) is
 
   l_player_id number;
@@ -52,4 +52,3 @@ begin
   end;
 
 end startGame;
-/

@@ -37,7 +37,11 @@ async function request(request, response) {
     } else if (/^\/getStatus/.test(request.url) && request.method === 'GET'){
         data = await callToDB.getStatus(sessionId);
     }  else if (/^\/sendCheckSum/.test(request.url) && request.method === 'POST'){
-        data = await callToDB.sendCheckSum(sessionId, data.params.checkSum);
+        data.error = await callToDB.sendCheckSum(sessionId, data.params.checkSum);
+    } else if (/^\/sendHit/.test(request.url) && request.method === 'POST'){
+        data.error = await callToDB.sendHit(sessionId, data.params.hit);
+    } else if (/^\/sendAnswer/.test(request.url) && request.method === 'POST'){
+        data.error = await callToDB.sendAnswer(sessionId, data.params.hitResult);
     }
 
     gen_response(data, setSessionId, response);
