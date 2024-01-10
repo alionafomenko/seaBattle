@@ -44,7 +44,7 @@ begin
         from steps s
        where s.game_id = l_game_id
          and s.player_id != l_player_id
-       order by s.id desc FETCH next 1 ROWS ONLY;
+       order by s.step_date desc FETCH next 1 ROWS ONLY;
     
       update steps s set s.killed = p_hit_result where s.id = l_step_id;
     

@@ -58,9 +58,8 @@ begin
     else
       p_error := 'notyourturn';
     end if;
-    
   else
-    p_error := 'notyourturn';
+    p_error := 'error';
   end if;
 
 end sendhit;

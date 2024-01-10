@@ -32,12 +32,13 @@ async function request(request, response) {
         let error = await callToDB.autorisation(sessionId, data.params.name, data.params.password);
         data.error = error;
     } else if (/^\/startGame/.test(request.url) && request.method === 'POST'){
-        let error = await callToDB.startGame(sessionId);
-        data.error = error;
+        data = await callToDB.startGame(sessionId);
     } else if (/^\/getStatus/.test(request.url) && request.method === 'GET'){
         data = await callToDB.getStatus(sessionId);
     }  else if (/^\/sendCheckSum/.test(request.url) && request.method === 'POST'){
         data.error = await callToDB.sendCheckSum(sessionId, data.params.checkSum);
+    }  else if (/^\/sendAllShipsMap/.test(request.url) && request.method === 'POST'){
+        data.error = await callToDB.sendAllShipsMap(sessionId, data.params.map);
     } else if (/^\/sendHit/.test(request.url) && request.method === 'POST'){
         data.error = await callToDB.sendHit(sessionId, data.params.hit);
     } else if (/^\/sendAnswer/.test(request.url) && request.method === 'POST'){

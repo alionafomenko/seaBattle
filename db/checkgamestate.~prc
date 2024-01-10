@@ -5,7 +5,6 @@ create or replace procedure checkgamestate(p_game_id     in number,
   l_game_player1_id  number;
   l_game_player2_id  number;
   l_winner_player_id number;
-  l_count            number;
 
   g_ships_count constant number := 10;
 
@@ -33,33 +32,13 @@ begin
     update games g
        set g.status = 'finish', g.winner_id = l_winner_player_id
      where g.id = p_game_id;
-  
-    p_game_status := 'finish';
-  
-    commit;
+     
+     p_game_status := 'finish';
+     
+     commit;
   
   exception
     when no_data_found then
-      begin
-      
-        select count(*)
-          into l_count
-          from steps s
-         where s.game_id = p_game_id
-         group by s.player_id
-        having count(*) >= 100;
-      
-        if l_count >= 100 then
-        
-          update games g
-             set g.status = 'finish'
-           where g.id = p_game_id;
-        
-        end if;
-      exception
-        when no_data_found then
-          null;
-      end;
       null;
   end;
 

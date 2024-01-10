@@ -3,7 +3,6 @@ create or replace procedure getStatus(p_sessionId         in varchar2,
                                       p_recent_hit        out varchar2,
                                       p_recent_hit_result out varchar2,
                                       p_game_id           out number,
-                                      p_winner            out varchar2,
                                       p_error             out varchar2) is
 
   l_player_id number;
@@ -15,8 +14,6 @@ create or replace procedure getStatus(p_sessionId         in varchar2,
   l_player_turn            number;
   l_start_date             date;
   l_count_another_new_game integer;
-  l_winner_id              number;
-
 begin
 
   begin
@@ -52,20 +49,8 @@ begin
         or g.player2_id = l_player_id
      order by g.id desc FETCH next 1 ROWS ONLY;
   
-    if p_status = 'finish' then
+    if p_status in ('finish', 'gameover') then
       return;
-    elsif p_status = 'gameover' then
-      if (l_game_player1_id = l_player_id and
-         l_winner_id = l_game_player1_id) or
-         (l_game_player2_id = l_player_id and
-         l_winner_id = l_game_player2_id) then
-        p_winner := 'you';
-      elsif l_winner_id = 0 then
-        p_winner := 'nowinners';
-      else
-        p_winner := 'opponent';
-      end if;
-    
     end if;
   
   exception
@@ -132,7 +117,7 @@ begin
     if (l_player_id = l_game_player1_id and l_player_turn = 1) or
        (l_player_id = l_game_player2_id and l_player_turn = 2) then
       p_status := 'youranswer';
-    
+      
       select s.step
         into p_recent_hit
         from steps s
